@@ -1,0 +1,80 @@
+{
+  "rules": {
+    "channels": {
+      ".read": true,
+      "$channelId": {
+        ".write": true,
+        ".validate": "newData.hasChildren(['id', 'name', 'createdBy', 'details'])",
+        "id": {
+          ".validate": "newData.val() === $channelId"
+        },
+        "name": {
+          ".validate": "newData.val().length > 0"
+        },
+        "details": {
+          ".validate": "newData.val().length > 0"
+        }
+      }
+    },
+    "messages": {
+      "$channelId": {
+        ".read": true,
+        ".validate": "root.child('channels/'+$channelId).exists()",
+        "$messageId": {
+          ".write": true,
+          ".validate": "(newData.hasChildren(['content', 'user', 'timestamp']) && !newData.hasChildren(['image'])) || (newData.hasChildren(['image', 'user', 'timestamp']) && !newData.hasChildren(['content']))",
+          "content": {
+            ".validate": "newData.val().length > 0"
+          },
+          "image": {
+            ".validate": "newData.val().length > 0"
+          },
+          "user": {
+            ".validate": "newData.hasChildren(['id', 'name', 'avatar'])"
+          }
+        }
+      }
+    },
+    "privateMessages": {
+      "$uid1": {
+        "$uid2": {
+          ".read": "true && ($uid1 === auth.uid || $uid2 === auth.uid)",
+          "$messageId": {
+            ".write": true,
+            ".validate": "(newData.hasChildren(['content', 'user', 'timestamp']) && !newData.hasChildren(['image'])) || (newData.hasChildren(['image', 'user', 'timestamp']) && !newData.hasChildren(['content']))",
+            "content": {
+              ".validate": "newData.val().length > 0"
+            },
+            "image": {
+              ".validate": "newData.val().length > 0"
+            },
+            "user": {
+              ".validate": "newData.hasChildren(['id', 'name', 'avatar'])"
+            }
+          }
+        }
+      }
+    },
+    "users": {
+      ".read": true,
+      "$uid": {
+        ".write": "true && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['name', 'avatar'])",
+        "name": {
+          ".validate": "newData.val().length > 0"
+        },
+        "avatar": {
+          ".validate": "newData.val().length > 0"
+        }
+      }
+    },
+    "presence": {
+      ".read": true,
+      ".write": true
+    },
+    "typing": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
